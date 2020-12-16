@@ -4,6 +4,7 @@
 #include <string.h>
 #include "pf_mixer.h"
 #include "RadioHandler.h"
+#include "RadioHardware.h"
 #include "config.h"
 #include "fft_mt_r2iq.h"
 #include "config.h"

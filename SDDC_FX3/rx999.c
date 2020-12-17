@@ -50,8 +50,8 @@ adf4350_init_param adf4351_init_params = {
     .clk_divider_mode = 0,
 
     // r4_user_settings
-    .aux_output_enable = 1,
-    .aux_output_fundamental_enable = 1,
+    .aux_output_enable = 0,
+    .aux_output_fundamental_enable = 0,
     .mute_till_lock_enable = 0,
     .output_power = 0, //-4dbm
     .aux_output_power = 0

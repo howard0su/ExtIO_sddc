@@ -152,11 +152,11 @@ const double *sddc_get_frequency_range(sddc_t *t)
 
 enum RFMode sddc_get_rf_mode(sddc_t *t)
 {
-    switch(t->handler->GetmodeRF())
+    switch(t->handler->GetRangeIndex())
     {
-        case HFMODE:
+        case 0:
             return RFMode::HF_MODE;
-        case VHFMODE:
+        default:
             return RFMode::VHF_MODE;
     }
 
@@ -168,10 +168,10 @@ int sddc_set_rf_mode(sddc_t *t, enum RFMode rf_mode)
     switch (rf_mode)
     {
     case VHF_MODE:
-        t->handler->UpdatemodeRF(VHFMODE);
+        t->handler->SetRangeIndex(1);
         break;
     case HF_MODE:
-        t->handler->UpdatemodeRF(HFMODE);
+        t->handler->SetRangeIndex(0);
     default:
         return -1;
     }

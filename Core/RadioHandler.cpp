@@ -119,7 +119,7 @@ RadioHandlerClass::RadioHandlerClass() :
 	randout(false),
 	biasT_HF(false),
 	biasT_VHF(false),
-	modeRF(NOMODE),
+	rangeIndex(-1),
 	firmware(0),
 	fc(0.0f),
 	hardware(new DummyRadio())
@@ -289,15 +289,21 @@ int RadioHandlerClass::GetIFGainSteps(const float **steps)
 	return hardware->getIFSteps(steps);
 }
 
-bool RadioHandlerClass::UpdatemodeRF(rf_mode mode)
+int RadioHandlerClass::getRanges(const int64_t** low, const int64_t **high)
 {
-	if (modeRF != mode){
-		modeRF = mode;
-		DbgPrintf("Switch to mode: %d\n", modeRF);
+	return hardware->getFrequencyRanges(low, high);
+}
 
-		hardware->UpdatemodeRF(mode);
+bool RadioHandlerClass::SetRangeIndex(int index)
+{
+	if (index != rangeIndex){
+		rangeIndex = index;
+		DbgPrintf("Switch to Range: %d\n", index);
 
-		if (mode == VHFMODE)
+		hardware->UpdateFrequencyRange(index);
+
+		// TODO
+		if (index != 0)
 			r2iqCntrl->setSideband(true);
 		else
 			r2iqCntrl->setSideband(false);

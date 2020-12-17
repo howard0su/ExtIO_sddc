@@ -15,15 +15,20 @@ void HF103Radio::Initialize()
     }
 }
 
-void HF103Radio::getFrequencyRange(int64_t& low, int64_t& high)
+static const int64_t low_limit[] = {0};
+static const int64_t high_limit[] = {M(32)};
+
+int HF103Radio::getFrequencyRanges(const int64_t** low, const int64_t** high)
 {
-    low = 0;
-    high = 32 * 1000 * 1000;
+    *low = low_limit;
+    *high = high_limit;
+
+    return 1;
 }
 
-bool HF103Radio::UpdatemodeRF(rf_mode mode)
+bool HF103Radio::UpdateFrequencyRange(int index)
 {
-    if (mode == VHFMODE)
+    if (index != 0)
         return false;
 
     return true;

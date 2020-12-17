@@ -32,8 +32,6 @@ public:
     int GetIFGainSteps(const float **steps);
     int UpdateIFGain(int attIdx);
 
-    bool UpdatemodeRF(rf_mode mode);
-    rf_mode GetmodeRF(){return (rf_mode)modeRF;}
     bool UptDither (bool b);
     bool GetDither () {return dither;}
     bool UptRand (bool b);
@@ -41,6 +39,10 @@ public:
     bool UptsamplesADC(bool flag) { samplesADCflag = flag; return  samplesADCflag; }
     bool GetADCsamples() { return  samplesADCflag; }
     uint16_t GetFirmware() { return firmware; }
+
+    int getRanges(const int64_t** low, const int64_t **high);
+    bool SetRangeIndex(int index);
+    int GetRangeIndex() const { return rangeIndex; }
 
     uint32_t getSampleRate();
 
@@ -83,7 +85,7 @@ private:
     bool traceflag;
     bool samplesADCflag;
     uint16_t firmware;
-    rf_mode modeRF;
+    int rangeIndex;
     RadioModel radio;
 
     // transfer variables

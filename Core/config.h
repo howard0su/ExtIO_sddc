@@ -46,19 +46,21 @@ inline void null_func(const char *format, ...) { }
 
 #define VERSION             (1.01)	//	Dll version number x.xx
 
-#define SETTINGS_IDENTIFIER	"sddc_1.03"
+#define SETTINGS_IDENTIFIER	"sddc_1.04"
 #define SWNAME				"ExtIO_sddc.dll"
 
 #define	QUEUE_SIZE 64
 
 #define FFTN_R_ADC (2048)       // FFTN used for ADC real stream DDC
 
+#define K(freq) (freq*1000u)
+#define M(freq) (freq*1000000u)
+
+
 // GAINFACTORS to be adjusted with lab reference source measured with HDSDR Smeter rms mode  
 #define BBRF103_GAINFACTOR (0.000000078F)       // BBRF103
 #define HF103_GAINFACTOR   (0.0000000114F)      // HF103
 #define RX888_GAINFACTOR   (0.00000000695F)     // RX888
-
-enum rf_mode { NOMODE = 0, HFMODE = 0x1, VHFMODE = 0x2 }; 
 
 #define HF_HIGH (32000000)    // 32M
 #define MW_HIGH ( 2000000)
@@ -75,6 +77,8 @@ enum rf_mode { NOMODE = 0, HFMODE = 0x1, VHFMODE = 0x2 };
 #define URL_HDSDRA          "<a>http://www.hdsdr.de/</a>"
 
 #define TIMEOUT (2000)
+
+#define MAX_RANGES 	5
 
 extern int gdFreqCorr_ppm;
 extern int gdGainCorr_dB;

@@ -30,15 +30,19 @@ void BBRF103Radio::Initialize()
     Fx3->Control(STARTADC, data);
 }
 
-void BBRF103Radio::getFrequencyRange(int64_t& low, int64_t& high)
+static const int64_t low_limits[] = {0, M(32)};
+static const int64_t high_limits[] = {M(32), M(1700)};
+
+int BBRF103Radio::getFrequencyRanges(const int64_t** low, const int64_t** high)
 {
-    low = 10 * 1000;
-    high = 1750 * 1000 * 1000; // 
+    *low = low_limits;
+    *high = high_limits;
+    return 2;
 }
 
-bool BBRF103Radio::UpdatemodeRF(rf_mode mode)
+bool BBRF103Radio::UpdateFrequencyRange(int index)
 {
-    if (mode == VHFMODE)
+    if (index == 1)
     {
         // switch to VHF Attenna
         FX3UnsetGPIO(ATT_SEL0 | ATT_SEL1);
@@ -47,7 +51,7 @@ bool BBRF103Radio::UpdatemodeRF(rf_mode mode)
         return Fx3->Control(R82XXINIT, (uint32_t)R820T_FREQ);
     }
 
-    else if (mode == HFMODE )   // (mode == HFMODE || mode == VLFMODE) no more VLFMODE
+    else if (index == 0)
     {
         // Stop Tuner
         Fx3->Control(R82XXSTDBY);

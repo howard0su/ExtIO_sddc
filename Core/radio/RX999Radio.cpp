@@ -30,15 +30,19 @@ void RX999Radio::Initialize()
     Fx3->Control(STARTADC, data);
 }
 
-void RX999Radio::getFrequencyRange(int64_t &low, int64_t &high)
+static const int64_t low_limits[] = {0, M(32)};
+static const int64_t high_limits[] = {M(32), M(1700)};
+
+int RX999Radio::getFrequencyRanges(const int64_t** low, const int64_t** high)
 {
-    low = 10 * 1000;
-    high = 6000ll * 1000 * 1000; //
+    *low = low_limits;
+    *high = high_limits;
+    return 2;
 }
 
-bool RX999Radio::UpdatemodeRF(rf_mode mode)
+bool RX999Radio::UpdateFrequencyRange(int index)
 {
-    if (mode == VHFMODE)
+    if (index == 1)
     {
         // switch to VHF Attenna
         FX3SetGPIO(VHF_EN);
@@ -49,7 +53,7 @@ bool RX999Radio::UpdatemodeRF(rf_mode mode)
 
         return true;
     }
-    else if (mode == HFMODE)
+    else if (index == 0)
     {
         return FX3UnsetGPIO(VHF_EN);                // switch to HF Attenna
     }

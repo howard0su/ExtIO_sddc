@@ -11,10 +11,12 @@ public:
 
     virtual ~RadioHardware();
     virtual const char* getName() = 0;
-    virtual void getFrequencyRange(int64_t& low, int64_t& high) = 0;
+    virtual int getFrequencyRanges(const int64_t** low, const int64_t** high) = 0;
+    virtual bool UpdateFrequencyRange(int index) = 0;
+
     virtual float getGain() { return BBRF103_GAINFACTOR; }
     virtual void Initialize() = 0;
-    virtual bool UpdatemodeRF(rf_mode mode) = 0;
+
     virtual bool UpdateattRF(int attIndex) = 0;
     virtual uint64_t TuneLo(uint64_t freq) = 0;
 
@@ -40,9 +42,9 @@ public:
     BBRF103Radio(fx3class* fx3);
     const char* getName() override { return "BBRF103"; }
     float getGain() override { return BBRF103_GAINFACTOR; }
-    void getFrequencyRange(int64_t& low, int64_t& high) override;
+    int getFrequencyRanges(const int64_t** low, const int64_t** high) override;
+    bool UpdateFrequencyRange(int index) override;
     void Initialize() override;
-    bool UpdatemodeRF(rf_mode mode) override;
     uint64_t TuneLo(uint64_t freq) override;
     bool UpdateattRF(int attIndex) override;
     bool UpdateGainIF(int attIndex) override;
@@ -71,9 +73,9 @@ public:
     RX888R2Radio(fx3class* fx3);
     const char* getName() override { return "RX888 mkII"; }
     float getGain() override { return RX888_GAINFACTOR; }
-    void getFrequencyRange(int64_t& low, int64_t& high) override;
+    int getFrequencyRanges(const int64_t** low, const int64_t** high) override;
+    bool UpdateFrequencyRange(int index) override;
     void Initialize() override;
-    bool UpdatemodeRF(rf_mode mode) override;
     uint64_t TuneLo(uint64_t freq) override;
     bool UpdateattRF(int attIndex) override;
     bool UpdateGainIF(int attIndex) override;
@@ -99,9 +101,9 @@ public:
     const char* getName() override { return "RX999"; }
     float getGain() override { return RX888_GAINFACTOR; }
 
-    void getFrequencyRange(int64_t& low, int64_t& high) override;
+    int getFrequencyRanges(const int64_t** low, const int64_t** high) override;
+    bool UpdateFrequencyRange(int index) override;
     void Initialize() override;
-    bool UpdatemodeRF(rf_mode mode) override;
     uint64_t TuneLo(uint64_t freq) override;
     bool UpdateattRF(int attIndex) override;
     bool UpdateGainIF(int attIndex) override;
@@ -123,14 +125,12 @@ public:
     const char* getName() override { return "HF103"; }
     float getGain() override { return HF103_GAINFACTOR; }
 
-    void getFrequencyRange(int64_t& low, int64_t& high) override;
+    int getFrequencyRanges(const int64_t** low, const int64_t** high) override;
+    bool UpdateFrequencyRange(int index) override;
 
     void Initialize() override;
 
-    bool UpdatemodeRF(rf_mode mode) override;
-
     uint64_t TuneLo(uint64_t freq) override { return 0; }
-    
     bool UpdateattRF(int attIndex) override;
 
     int getRFSteps(const float** steps ) override;
@@ -145,10 +145,9 @@ public:
     DummyRadio() : RadioHardware(nullptr) {}
     const char* getName() override { return "HF103"; }
 
-    void getFrequencyRange(int64_t& low, int64_t& high) override
-    { low = 0; high = 6ll*1000*1000*1000;}
+    int getFrequencyRanges(const int64_t** low, const int64_t** high) { return 0; }
+    bool UpdateFrequencyRange(int index) { return true; }
     void Initialize() override {}
-    bool UpdatemodeRF(rf_mode mode) override { return true; }
     bool UpdateattRF(int attIndex) override { return true; }
     uint64_t TuneLo(uint64_t freq) override { return freq; }
 };

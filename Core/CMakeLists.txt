@@ -22,3 +22,10 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")
 add_library(SDDC_CORE STATIC ${SRC})
 set_target_properties(SDDC_CORE PROPERTIES POSITION_INDEPENDENT_CODE True)
 target_compile_definitions(SDDC_CORE PUBLIC _CRT_SECURE_NO_WARNINGS)
+
+
+file(GLOB UNITTESTS "unittest/*.cpp")
+
+add_executable(unittest ${UNITTESTS})
+target_link_libraries(unittest PRIVATE SDDC_CORE)
+add_test(NAME unittest COMMAND unittest)

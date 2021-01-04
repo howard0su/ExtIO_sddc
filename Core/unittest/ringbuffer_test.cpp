@@ -1,6 +1,10 @@
 #include "dsp/rinbuffer.h"
 
 #include "CppUnitTestFramework.hpp"
+#include <thread>
+#include <chrono>
+
+using namespace std::chrono;
 
 namespace {
     struct RingBufferFixture {};
@@ -72,4 +76,43 @@ TEST_CASE(RingBufferFixture, RingBuffer_TwoThreadsLargeBufferTest)
 
     thread1.join();
     thread2.join();
+}
+
+
+TEST_CASE(RingBufferFixture, RingBuffer_StopTest)
+{
+    bool run = true;
+    auto buffer = ringbuffer<int16_t>(1024, 128);
+    auto thread1 = std::thread(
+        [&buffer, &run, this](){
+            for(int i = 0; i < 1000 && run; i++) {
+                auto ptr = buffer.getReadPtr();
+                if (!run) break;
+                CHECK_EQUAL(*ptr, 0x5A5A);
+                buffer.ReadDone();
+            }
+        }
+    );
+
+    auto thread2 = std::thread(
+        [&buffer, &run, this](){
+            for(int i = 0; i < 1000 && run; i++) {
+                auto ptr = buffer.getReadPtr();
+                if (!run) break;
+                CHECK_EQUAL(*ptr, 0x5A5A);
+                buffer.ReadDone();
+            }
+        }
+    );
+    auto thread3 = std::thread(
+        [&thread1, &thread2](){
+            thread1.join();
+            thread2.join();
+        });
+
+    std::this_thread::sleep_for(1s);
+
+    run = false;
+    buffer.Stop();
+    thread3.join();
 }

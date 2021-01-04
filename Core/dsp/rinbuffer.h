@@ -87,6 +87,8 @@ public:
 
     void Stop()
     {
+        read_index = 0;
+        write_index = max_count / 2;
         nonfullCV.notify_all();
         nonemptyCV.notify_all();
     }

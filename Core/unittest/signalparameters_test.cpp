@@ -16,15 +16,15 @@ TEST_CASE(SignalFixture, BasicTest2)
 {
     this->setDecimate(1);
 
-    CHECK_EQUAL(1, mdecimation);
+    CHECK_EQUAL(1, m_decimation);
 
     this->setDecimate(2);
-    CHECK_EQUAL(2, mdecimation);
-    CHECK_EQUAL(1024, mfft);
-    CHECK_EQUAL(4, mradio);
+    CHECK_EQUAL(2, m_decimation);
+    CHECK_EQUAL(1024, m_fft);
+    CHECK_EQUAL(4, m_ratio);
 
     this->setFreqOffset(0.5);
     this->setDecimate(1);
-    CHECK_EQUAL(2048, mtunebin);
+    CHECK_EQUAL(2048, m_tunebin);
 
 }

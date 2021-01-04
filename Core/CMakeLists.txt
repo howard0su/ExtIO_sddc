@@ -28,4 +28,4 @@ file(GLOB UNITTESTS "unittest/*.cpp")
 
 add_executable(unittest ${UNITTESTS})
 target_link_libraries(unittest PRIVATE SDDC_CORE)
-add_test(NAME unittest COMMAND unittest)
+add_test(unittest unittest)

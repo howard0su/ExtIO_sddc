@@ -11,6 +11,7 @@ template<typename TINPUT, typename TOUTPUT> class calculator: public SignalParam
 public:
     // start the thread
     void start() {
+        setInputBlockSize(input->getBlockSize());
         run = true;
         timesum = 0s;
         count = 0;
@@ -37,6 +38,15 @@ public:
         return timesum.count() / count;
     }
 
+    virtual void setInputBlockSize(int inputSize)
+    {
+        InputBlockSize = inputSize;
+        if (output)
+            output->setBlockSize(inputSize);
+    }
+
+    int getInputBlockSize() const { return InputBlockSize; }
+
 protected:
     calculator(ringbuffer<TINPUT> *_input) :
         input(_input),
@@ -54,6 +64,8 @@ protected:
 
     ringbuffer<TINPUT> *input;
     ringbuffer<TOUTPUT> *output;
+
+    int InputBlockSize;
 private:
     std::thread thread;
     duration<float> timesum;

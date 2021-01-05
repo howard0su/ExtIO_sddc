@@ -4,33 +4,53 @@
 #include <condition_variable>
 
 const int default_count = 1024;
+#define ALIGN (64)
 
 template<typename T> class ringbuffer {
     typedef T* TPtr;
 
 public:
-    ringbuffer(int size, int count) :
+    ringbuffer(int count = default_count) :
         max_count(count),
-        block_size(size),
         read_index(0),
         write_index(0)
     {
+        block_size = 0;
         buffers = new TPtr[max_count];
-
-        for (int i = 0; i < max_count; ++i)
-        {
-            buffers[i] = new T[size];
-        }
+        buffers[0] = nullptr;
     }
 
     ~ringbuffer()
     {
-        for (int i = 0; i < max_count; ++i)
-        {
-            delete[] buffers[i];
-        }
+        if (buffers[0])
+            delete[] buffers[0];
 
         delete[] buffers;
+    }
+
+    void setBlockSize(int size)
+    {
+        if (block_size != size)
+        {
+            block_size = size;
+
+            if (buffers[0])
+                delete[] buffers[0];
+
+            int aligned_block_size = (block_size + ALIGN - 1) & (~(ALIGN - 1));
+
+            auto data = new T[max_count * block_size];
+
+            for (int i = 0; i < max_count; ++i)
+            {
+                buffers[i] = data + i * aligned_block_size;
+            }
+        }
+    }
+
+    T* peekWritePtr(int offset)
+    {
+        return buffers[(write_index + offset) % max_count];
     }
 
     T* getWritePtr()

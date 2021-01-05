@@ -16,7 +16,7 @@ protected:
         auto *dest = output->getWritePtr();
 
         // TODO: assume read/write has same block size
-        for (int i = 0; i < input->getBlockSize(); ++i)
+        for (int i = 0; i < getInputBlockSize(); ++i)
             dest[i] = float(src[i]);
 
         output->WriteDone();

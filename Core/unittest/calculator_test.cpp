@@ -9,13 +9,14 @@ namespace {
     struct ConverterFixture {};
 }
 
-TEST_CASE(ConverterFixture, RingBuffer_SingleThreadTest)
+TEST_CASE(ConverterFixture, SingleThreadTest)
 {
-    auto input = ringbuffer<int16_t>(transferSize, 128);
-    auto output= ringbuffer<float>(transferSize, 16);
+    auto input = ringbuffer<int16_t>(128);
+    auto output= ringbuffer<float>(16);
 
-    auto conv = converter(&input, &output);
+    converter conv(&input, &output);
 
+    input.setBlockSize(transferSize / 2);
     conv.start();
     const int count = 128;
     for (int i = 0; i < count; i++) {
@@ -26,7 +27,7 @@ TEST_CASE(ConverterFixture, RingBuffer_SingleThreadTest)
 
     for (int j = 0; j < count; j++) {
         auto *ptr = output.getReadPtr();
-        CHECK_EQUAL(*ptr, 23130.0f);
+        REQUIRE_EQUAL(*ptr, 23130.0f);
         output.ReadDone();
     }
 
@@ -34,13 +35,14 @@ TEST_CASE(ConverterFixture, RingBuffer_SingleThreadTest)
     printf("Perf: %f\n", conv.getProcessTime());
 }
 
-TEST_CASE(ConverterFixture, RingBuffer_TwoThreadsThreadTest)
+TEST_CASE(ConverterFixture, TwoThreadsThreadTest)
 {
-    auto input = ringbuffer<int16_t>(transferSize, 128);
-    auto output= ringbuffer<float>(transferSize, 16);
+    auto input = ringbuffer<int16_t>(128);
+    auto output= ringbuffer<float>(16);
 
     auto conv = converter(&input, &output);
 
+    input.setBlockSize(transferSize / 2);
     conv.start();
     const int count = 1280;
 
@@ -55,7 +57,7 @@ TEST_CASE(ConverterFixture, RingBuffer_TwoThreadsThreadTest)
     auto thread2 = std::thread([&output, count, this] {
         for (int j = 0; j < count; j++) {
             auto *ptr = output.getReadPtr();
-            CHECK_EQUAL(*ptr, 23130.0f);
+            REQUIRE_EQUAL(*ptr, 23130.0f);
             output.ReadDone();
         }
     });

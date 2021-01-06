@@ -3,8 +3,8 @@
 #include <mutex>
 #include <condition_variable>
 
-const int default_count = 1024;
-#define ALIGN (64)
+const int default_count = 64;
+#define ALIGN (8)
 
 template<typename T> class ringbuffer {
     typedef T* TPtr;

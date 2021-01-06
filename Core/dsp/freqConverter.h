@@ -1,6 +1,7 @@
 #pragma once
 
 #include "calculator.h"
+#include <string.h>
 #include <fftw3.h>
 
 class FreqConverter : public calculator<float, fftwf_complex>

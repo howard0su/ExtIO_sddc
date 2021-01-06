@@ -2,6 +2,8 @@
 
 #include "calculator.h"
 #include "fir.h"
+
+#include <string.h>
 #include <fftw3.h>
 #include <algorithm>
 

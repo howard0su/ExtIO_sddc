@@ -4,7 +4,12 @@ file(GLOB UNITTESTS "./*.cpp")
 
 add_executable(unittest ${UNITTESTS})
 target_link_libraries(unittest PRIVATE SDDC_CORE)
-target_link_libraries(unittest PUBLIC ${CMAKE_BINARY_DIR}/libfftw3f-3.lib)
+if (MSVC)
+  target_link_libraries(unittest PUBLIC ${CMAKE_BINARY_DIR}/libfftw3f-3.lib)
+else()
+  target_link_libraries(unittest PUBLIC fftw3f pthread)
+endif (MSVC)
+
 
 foreach(TESTSRC ${UNITTESTS})
     file(STRINGS ${TESTSRC} TESTS REGEX "^TEST_CASE\(.+\)")

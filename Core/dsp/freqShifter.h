@@ -10,8 +10,8 @@
 class FreqShifter : public calculator<fftwf_complex, fftwf_complex>
 {
 public:
-    FreqShifter(ringbuffer<fftwf_complex> *input, ringbuffer<fftwf_complex> *output)
-        : calculator(input, output),
+    FreqShifter(ringbuffer<fftwf_complex> *input)
+        : calculator(input),
           gain(1.0f/32768.0f/1000.0f)
     {
         createFilters();

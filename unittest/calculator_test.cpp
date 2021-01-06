@@ -12,9 +12,7 @@ namespace {
 TEST_CASE(ConverterFixture, SingleThreadTest)
 {
     auto input = ringbuffer<int16_t>(128);
-    auto output= ringbuffer<float>(16);
-
-    converter conv(&input, &output);
+    converter conv(&input);
 
     input.setBlockSize(transferSize / 2);
     conv.start();
@@ -25,10 +23,11 @@ TEST_CASE(ConverterFixture, SingleThreadTest)
         input.WriteDone();
     }
 
+    auto output = conv.getOutput();
     for (int j = 0; j < count; j++) {
-        auto *ptr = output.getReadPtr();
+        auto *ptr = output->getReadPtr();
         REQUIRE_EQUAL(*ptr, 23130.0f);
-        output.ReadDone();
+        output->ReadDone();
     }
 
     conv.stop();
@@ -38,9 +37,7 @@ TEST_CASE(ConverterFixture, SingleThreadTest)
 TEST_CASE(ConverterFixture, TwoThreadsThreadTest)
 {
     auto input = ringbuffer<int16_t>(128);
-    auto output= ringbuffer<float>(16);
-
-    auto conv = converter(&input, &output);
+    auto conv = converter(&input);
 
     input.setBlockSize(transferSize / 2);
     conv.start();
@@ -54,11 +51,12 @@ TEST_CASE(ConverterFixture, TwoThreadsThreadTest)
         }
     });
 
+    auto output= conv.getOutput();
     auto thread2 = std::thread([&output, count, this] {
         for (int j = 0; j < count; j++) {
-            auto *ptr = output.getReadPtr();
+            auto *ptr = output->getReadPtr();
             REQUIRE_EQUAL(*ptr, 23130.0f);
-            output.ReadDone();
+            output->ReadDone();
         }
     });
 

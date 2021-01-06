@@ -12,9 +12,7 @@ namespace {
 TEST_CASE(FreqShifterFixture, BasicTest)
 {
     auto input = ringbuffer<fftwf_complex>(128);
-    auto output = ringbuffer<fftwf_complex>(128);
-
-    FreqShifter shifter(&input, &output);
+    FreqShifter shifter(&input);
     input.setBlockSize(FFTN_R_ADC);
 
     shifter.start();
@@ -26,15 +24,12 @@ TEST_CASE(FreqShifterFixture, BasicTest)
 TEST_CASE(FreqShifterFixture, End2EndTest)
 {
     auto input = ringbuffer<int16_t>(8);
-    auto floatoutput = ringbuffer<float>(16);
-    auto freqoutput = ringbuffer<fftwf_complex>(16);
-    auto shiftoutput = ringbuffer<fftwf_complex>(16);
-    auto timeoutput = ringbuffer<fftwf_complex>(16);
 
-    converter conv(&input, &floatoutput);
-    FreqConverter r2c(&floatoutput, &freqoutput);
-    FreqShifter shifter(&freqoutput, &shiftoutput);
-    FreqBackConverter c2c(&shiftoutput, &timeoutput);
+    converter conv(&input);
+    FreqConverter r2c(conv.getOutput());
+    FreqShifter shifter(r2c.getOutput());
+    FreqBackConverter c2c(shifter.getOutput());
+
     input.setBlockSize(transferSize / sizeof(int16_t));
 
     conv.start();
@@ -51,10 +46,11 @@ TEST_CASE(FreqShifterFixture, End2EndTest)
         }
     });
 
+    auto timeoutput = c2c.getOutput();
     auto thread2 = std::thread([&timeoutput, count, this] {
         for (int j = 0; j < count * 8; j++) {
-            auto *ptr = timeoutput.getReadPtr();
-            timeoutput.ReadDone();
+            auto *ptr = timeoutput->getReadPtr();
+            timeoutput->ReadDone();
         }
     });
 
@@ -67,8 +63,11 @@ TEST_CASE(FreqShifterFixture, End2EndTest)
     conv.stop();
 
     printf("buffer0 write:%d full:%d empty:%d\n", input.getWriteCount(), input.getFullCount(), input.getEmptyCount());
-    printf("buffer1 write:%d full:%d empty:%d\n", floatoutput.getWriteCount(), floatoutput.getFullCount(), floatoutput.getEmptyCount());
-    printf("buffer2 write:%d full:%d empty:%d\n", freqoutput.getWriteCount(), freqoutput.getFullCount(), freqoutput.getEmptyCount());
-    printf("buffer3 write:%d full:%d empty:%d\n", shiftoutput.getWriteCount(), shiftoutput.getFullCount(), shiftoutput.getEmptyCount());
-    printf("buffer4 write:%d full:%d empty:%d\n", timeoutput.getWriteCount(), timeoutput.getFullCount(), timeoutput.getEmptyCount());
+    auto floatoutput = conv.getOutput();
+    printf("buffer1 write:%d full:%d empty:%d\n", floatoutput->getWriteCount(), floatoutput->getFullCount(), floatoutput->getEmptyCount());
+    auto freqoutput = r2c.getOutput();
+    printf("buffer2 write:%d full:%d empty:%d\n", freqoutput->getWriteCount(), freqoutput->getFullCount(), freqoutput->getEmptyCount());
+    auto shiftoutput = shifter.getOutput();
+    printf("buffer3 write:%d full:%d empty:%d\n", shiftoutput->getWriteCount(), shiftoutput->getFullCount(), shiftoutput->getEmptyCount());
+    printf("buffer4 write:%d full:%d empty:%d\n", timeoutput->getWriteCount(), timeoutput->getFullCount(), timeoutput->getEmptyCount());
 }

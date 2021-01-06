@@ -10,12 +10,10 @@ namespace {
 TEST_CASE(FreqConverterFixture, BasicTest)
 {
     auto input = ringbuffer<float>(128);
-    auto freqoutput = ringbuffer<fftwf_complex>(1024);
-    auto timeoutput = ringbuffer<fftwf_complex>(1024);
 
     input.setBlockSize(transferSize / 2);
-    FreqConverter r2c(&input, &freqoutput);
-    auto c2c = FreqBackConverter(&freqoutput, &timeoutput);
+    FreqConverter r2c(&input);
+    auto c2c = FreqBackConverter(r2c.getOutput());
 
     r2c.start();
     c2c.start();
@@ -27,9 +25,10 @@ TEST_CASE(FreqConverterFixture, BasicTest)
         input.WriteDone();
     }
 
+    auto timeoutput = c2c.getOutput();
     for (int j = 0; j < count; j++) {
-        auto *ptr = timeoutput.getReadPtr();
-        timeoutput.ReadDone();
+        auto *ptr = timeoutput->getReadPtr();
+        timeoutput->ReadDone();
     }
 
     c2c.stop();
@@ -42,11 +41,9 @@ TEST_CASE(FreqConverterFixture, BasicTest)
 TEST_CASE(FreqConverterFixture, ThreadsTest)
 {
     auto input = ringbuffer<float>(12);
-    auto freqoutput = ringbuffer<fftwf_complex>(128);
-    auto timeoutput = ringbuffer<fftwf_complex>(128);
 
-    FreqConverter r2c(&input, &freqoutput);
-    auto c2c = FreqBackConverter(&freqoutput, &timeoutput);
+    FreqConverter r2c(&input);
+    auto c2c = FreqBackConverter(r2c.getOutput());
 
     input.setBlockSize(transferSize / 2);
     r2c.start();
@@ -63,10 +60,11 @@ TEST_CASE(FreqConverterFixture, ThreadsTest)
         }
     });
 
+    auto timeoutput = r2c.getOutput();
     auto thread2 = std::thread([&timeoutput, rcount, this] {
         for (int j = 0; j < rcount ; j++) {
-            auto *ptr = timeoutput.getReadPtr();
-            timeoutput.ReadDone();
+            auto *ptr = timeoutput->getReadPtr();
+            timeoutput->ReadDone();
         }
     });
 

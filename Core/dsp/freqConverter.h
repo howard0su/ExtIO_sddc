@@ -7,8 +7,8 @@
 class FreqConverter : public calculator<float, fftwf_complex>
 {
 public:
-    FreqConverter(ringbuffer<float> *input, ringbuffer<fftwf_complex> *output)
-        : calculator(input, output)
+    FreqConverter(ringbuffer<float> *input)
+        : calculator(input)
     {
         auto ADCinTime = new float[FFTN_R_ADC];
         auto ADCinFreq = new fftwf_complex[FFTN_R_ADC + 1];
@@ -64,7 +64,7 @@ private:
 class FreqBackConverter : public calculator<fftwf_complex, fftwf_complex>
 {
 public:
-    FreqBackConverter(ringbuffer<fftwf_complex> *input, ringbuffer<fftwf_complex> *output) : calculator(input, output)
+    FreqBackConverter(ringbuffer<fftwf_complex> *input) : calculator(input)
     {
         auto ADCinTime = new fftwf_complex[FFTN_R_ADC];
         auto ADCinFreq = new fftwf_complex[FFTN_R_ADC + 1];

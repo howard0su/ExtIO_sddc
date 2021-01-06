@@ -47,17 +47,13 @@ public:
 
     int getInputBlockSize() const { return InputBlockSize; }
 
+    ringbuffer<TOUTPUT> *getOutput() { return output; }
+
 protected:
     calculator(ringbuffer<TINPUT> *_input) :
-        input(_input),
-        output(nullptr)
+        input(_input)
     {
-    }
-
-    calculator(ringbuffer<TINPUT> *_input, ringbuffer<TOUTPUT> *_output) :
-        input(_input),
-        output(_output)
-    {
+        output = new ringbuffer<TOUTPUT>();
     }
 
     virtual void process() = 0;

@@ -5,7 +5,7 @@
 class converter : public calculator<int16_t, float>
 {
 public:
-    converter(ringbuffer<int16_t> *adc, ringbuffer<float> *output) : calculator(adc, output)
+    converter(ringbuffer<int16_t> *adc) : calculator(adc)
     {
     }
 

@@ -23,3 +23,4 @@ endif (MSVC)
 
 add_subdirectory(Core)
 add_subdirectory(libsddc)
+add_subdirectory(unittest)

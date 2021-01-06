@@ -3,6 +3,12 @@ cmake_minimum_required(VERSION 3.13)
 file(GLOB UNITTESTS "./*.cpp")
 
 add_executable(unittest ${UNITTESTS})
+
+if (MSVC)
+    include_directories("../Core/arch/win32/FFTW3/")
+endif()
+
+include_directories("." "../Core")
 target_link_libraries(unittest PRIVATE SDDC_CORE)
 if (MSVC)
   target_link_libraries(unittest PUBLIC ${CMAKE_BINARY_DIR}/libfftw3f-3.lib)

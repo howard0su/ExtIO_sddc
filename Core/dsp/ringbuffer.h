@@ -39,11 +39,11 @@ public:
 
             int aligned_block_size = (block_size + ALIGN - 1) & (~(ALIGN - 1));
 
-            auto data = new T[max_count * block_size];
+            auto data = new T[max_count * aligned_block_size];
 
             for (int i = 0; i < max_count; ++i)
             {
-                buffers[i] = data + i * aligned_block_size;
+                buffers[i] = &data[i * aligned_block_size];
             }
         }
     }

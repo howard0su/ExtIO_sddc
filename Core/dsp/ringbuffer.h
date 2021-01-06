@@ -13,7 +13,10 @@ public:
     ringbuffer(int count = default_count) :
         max_count(count),
         read_index(0),
-        write_index(0)
+        write_index(0),
+        fullCount(0),
+        emptyCount(0),
+        writeCount(0)
     {
         block_size = 0;
         buffers = new TPtr[max_count];
@@ -58,6 +61,7 @@ public:
         // if there is still space
         if ((write_index + 1) % max_count == read_index)
         {
+            fullCount++;
             std::unique_lock<std::mutex> lk(mutex);
             nonfullCV.wait(lk, [this] {
                 return (write_index + 1) % max_count != read_index;
@@ -79,6 +83,7 @@ public:
         {
             write_index = (write_index + 1) % max_count;
         }
+        writeCount++;
     }
 
     const T* getReadPtr()
@@ -86,6 +91,7 @@ public:
         // if not empty
         if (read_index == write_index)
         {
+            emptyCount++;
             std::unique_lock<std::mutex> lk(mutex);
             nonemptyCV.wait(lk, [this] {
                 return read_index != write_index;
@@ -111,6 +117,12 @@ public:
 
     int getBlockSize() const { return block_size; }
 
+    int getFullCount() const { return fullCount; }
+
+    int getEmptyCount() const { return emptyCount; }
+
+    int getWriteCount() const { return writeCount; }
+
     void Stop()
     {
         read_index = 0;
@@ -127,6 +139,10 @@ private:
 
     int read_index;
     int write_index;
+
+    int emptyCount;
+    int fullCount;
+    int writeCount;
 
     std::mutex mutex;
     std::condition_variable nonemptyCV;

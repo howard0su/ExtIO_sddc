@@ -25,11 +25,11 @@ TEST_CASE(FreqShifterFixture, BasicTest)
 
 TEST_CASE(FreqShifterFixture, End2EndTest)
 {
-    auto input = ringbuffer<int16_t>(4);
-    auto floatoutput = ringbuffer<float>(4);
-    auto freqoutput = ringbuffer<fftwf_complex>(30);
-    auto shiftoutput = ringbuffer<fftwf_complex>(30);
-    auto timeoutput = ringbuffer<fftwf_complex>(30);
+    auto input = ringbuffer<int16_t>(8);
+    auto floatoutput = ringbuffer<float>(16);
+    auto freqoutput = ringbuffer<fftwf_complex>(16);
+    auto shiftoutput = ringbuffer<fftwf_complex>(16);
+    auto timeoutput = ringbuffer<fftwf_complex>(16);
 
     converter conv(&input, &floatoutput);
     FreqConverter r2c(&floatoutput, &freqoutput);
@@ -42,7 +42,7 @@ TEST_CASE(FreqShifterFixture, End2EndTest)
     shifter.start();
     c2c.start();
 
-    int count = 4;
+    int count = 40;
     auto thread1 = std::thread([&input, count] {
         for (int i = 0; i < count; i++) {
             auto *ptr = input.getWritePtr();
@@ -61,11 +61,14 @@ TEST_CASE(FreqShifterFixture, End2EndTest)
     thread1.join();
     thread2.join();
 
-    printf("name: %s, output size: %d time:%.2f\n", "c2c", timeoutput.getBlockSize(), c2c.getProcessTime());
-    printf("name: %s, output size: %d time:%.2f\n", "shifter", shiftoutput.getBlockSize(), shifter.getProcessTime());
-
     c2c.stop();
     shifter.stop();
     r2c.stop();
     conv.stop();
+
+    printf("buffer0 write:%d full:%d empty:%d\n", input.getWriteCount(), input.getFullCount(), input.getEmptyCount());
+    printf("buffer1 write:%d full:%d empty:%d\n", floatoutput.getWriteCount(), floatoutput.getFullCount(), floatoutput.getEmptyCount());
+    printf("buffer2 write:%d full:%d empty:%d\n", freqoutput.getWriteCount(), freqoutput.getFullCount(), freqoutput.getEmptyCount());
+    printf("buffer3 write:%d full:%d empty:%d\n", shiftoutput.getWriteCount(), shiftoutput.getFullCount(), shiftoutput.getEmptyCount());
+    printf("buffer4 write:%d full:%d empty:%d\n", timeoutput.getWriteCount(), timeoutput.getFullCount(), timeoutput.getEmptyCount());
 }

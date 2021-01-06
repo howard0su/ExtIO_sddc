@@ -98,9 +98,15 @@ public:
     void ReadDone()
     {
         std::unique_lock<std::mutex> lk(mutex);
-        read_index = (read_index + 1) % max_count;
-
-        nonfullCV.notify_all();
+        if ((write_index + 1) % max_count == read_index)
+        {
+            read_index = (read_index + 1) % max_count;
+            nonfullCV.notify_all();
+        }
+        else
+        {
+            read_index = (read_index + 1) % max_count;
+        }
     }
 
     int getBlockSize() const { return block_size; }

@@ -61,11 +61,13 @@ public:
         // if there is still space
         if ((write_index + 1) % max_count == read_index)
         {
-            fullCount++;
             std::unique_lock<std::mutex> lk(mutex);
-            nonfullCV.wait(lk, [this] {
-                return (write_index + 1) % max_count != read_index;
-            });
+            fullCount++;
+            if ((write_index + 1) % max_count == read_index){
+                nonfullCV.wait(lk, [this] {
+                    return (write_index + 1) % max_count != read_index;
+                });
+            }
         }
 
         return buffers[(write_index) % max_count];
@@ -91,11 +93,13 @@ public:
         // if not empty
         if (read_index == write_index)
         {
-            emptyCount++;
             std::unique_lock<std::mutex> lk(mutex);
-            nonemptyCV.wait(lk, [this] {
-                return read_index != write_index;
-            });
+            emptyCount++;
+            if (read_index == write_index) {
+                nonemptyCV.wait(lk, [this] {
+                    return read_index != write_index;
+                });
+            }
         }
 
         return buffers[read_index];

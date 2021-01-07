@@ -37,7 +37,7 @@ TEST_CASE(FreqShifterFixture, End2EndTest)
     shifter.start();
     c2c.start();
 
-    int count = 40;
+    int count = 5 * 1024;
     auto thread1 = std::thread([&input, count] {
         for (int i = 0; i < count; i++) {
             auto *ptr = input.getWritePtr();

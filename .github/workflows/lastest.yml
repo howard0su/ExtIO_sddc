@@ -56,8 +56,9 @@ jobs:
       run: Expand-Archive -Path .\fftw-3.3.5-dll32.zip -DestinationPath unittest
 
     - name: Create Package
-      run: |
-        zip --junk-paths SDDC_EXTIO.ZIP ${{runner.workspace}}/build/ExtIO_sddc/RelWithDebInfo/ExtIO_SDDC.dll ${{runner.workspace}}/build/ExtIO_sddc/RelWithDebInfo/ExtIO_SDDC.pdb ${{runner.workspace}}/build/libfftw3f-3.dll
+      shell: powershell
+      run: Compress-Archive -DestinationPath SDDC_EXTIO.ZIP  -LiteralPath ${{runner.workspace}}/build/ExtIO_sddc/RelWithDebInfo/ExtIO_SDDC.dll,${{runner.workspace}}/build/ExtIO_sddc/RelWithDebInfo/ExtIO_SDDC.pdb,${{runner.workspace}}/build/libfftw3f-3.dll,README.md
+      
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1

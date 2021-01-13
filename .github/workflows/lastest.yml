@@ -1,4 +1,4 @@
-name: CMake
+name: Test Release
 
 on:
   # Trigger the workflow on push or pull request,
@@ -57,7 +57,7 @@ jobs:
 
     - name: Create Package
       shell: powershell
-      run: Compress-Archive -DestinationPath SDDC_EXTIO.ZIP  -LiteralPath ${{runner.workspace}}/build/ExtIO_sddc/RelWithDebInfo/ExtIO_SDDC.dll,${{runner.workspace}}/build/ExtIO_sddc/RelWithDebInfo/ExtIO_SDDC.pdb,${{runner.workspace}}/build/libfftw3f-3.dll,README.md
+      run: Compress-Archive -DestinationPath SDDC_EXTIO.ZIP  -LiteralPath ${{runner.workspace}}/build/ExtIO_sddc/RelWithDebInfo/ExtIO_SDDC.dll,${{runner.workspace}}/build/ExtIO_sddc/RelWithDebInfo/ExtIO_SDDC.pdb,${{runner.workspace}}/build/unittest/libfftw3f-3.dll,README.md
       
     - name: Create Release
       id: create_release
@@ -65,7 +65,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        release_name: Alpha Release
+        release_name: Test Release
         draft: false
         prerelease: true
     - name: Upload Release Asset
